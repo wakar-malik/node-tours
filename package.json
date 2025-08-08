@@ -1,0 +1,14 @@
+{
+  "name": "node-tours",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "wakar-malik",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
