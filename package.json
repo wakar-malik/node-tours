@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch app.js"
+    "start": "node --watch server.js"
   },
   "author": "wakar-malik",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "morgan": "^1.10.1"
   }
