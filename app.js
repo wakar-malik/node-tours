@@ -10,6 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 dotenv.config({ path: "./.env" });
+app.set("query parser", "extended");
 
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
@@ -18,8 +19,8 @@ if (process.env.NODE_ENV == "development") {
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
-// app.use("*", (req, res) => {
-//   res.json({ message: "this route is not defined" });
-// });
+app.use((req, res) => {
+  res.send(`this ${req.url} is not defined`);
+});
 
 module.exports = app;
