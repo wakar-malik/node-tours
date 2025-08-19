@@ -2,15 +2,15 @@ const Tour = require("../modal/tourModal");
 const ApiFeatures = require("../utils/apiFeatures");
 
 exports.getAllTours = async (req, res) => {
-  const tourQuery = Tour.find().filterQuery();
+  const tourQuery = Tour.find();
 
-  // const { query } = new ApiFeatures(tourQuery, req.query)
-  //   .filter()
-  //   .sort()
-  //   .limitFields()
-  //   .paginate();
+  const { query } = new ApiFeatures(tourQuery, req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
 
-  const tours = await tourQuery;
+  const tours = await query;
 
   try {
     res.status(200).json({
@@ -126,6 +126,7 @@ exports.getTourStats = async (req, res) => {
 
     res.status(200).json({
       message: "success",
+      size: stats.length,
       data: { stats },
     });
   } catch (error) {
