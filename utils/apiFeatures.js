@@ -31,7 +31,7 @@ class ApiFeatures {
 
   limitFields() {
     if (this.queryStr.fields) {
-      const fields = this.queryStr.fields.split(",").join(" ") || "price, name";
+      const fields = this.queryStr.fields.split(",").join("");
       this.query = this.query.select(fields);
     } else {
       this.query = this.query.select("-__v");
