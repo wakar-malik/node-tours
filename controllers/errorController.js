@@ -27,11 +27,14 @@ function sendErrorDev(err, res) {
 }
 
 function sendErrorProd(err, res) {
+  // OPERATIONAL, trusted error: send message to client
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
+
+    // PROGRAMMING or other unknown error: don't leak error details
   } else {
     res.status(err.statusCode).json({
       status: "error",
