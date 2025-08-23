@@ -1,6 +1,5 @@
 const express = require("express");
 const morgan = require("morgan");
-const dotenv = require("dotenv");
 const AppError = require("./utils/appError");
 const errorControlHandler = require("./controllers/errorController");
 // routes
@@ -11,7 +10,6 @@ const errorController = require("./controllers/errorController");
 const app = express();
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
-dotenv.config({ path: "./.env", quiet: true });
 app.set("query parser", "extended");
 
 if (process.env.NODE_ENV == "development") {
