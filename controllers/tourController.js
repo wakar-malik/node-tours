@@ -1,9 +1,9 @@
-const Tour = require("../modal/tourModal");
+const Tour = require("../model/tourModel");
 const ApiFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-exports.getAllTours = async (req, res, next) => {
+exports.getAllTours = catchAsync(async (req, res, next) => {
   const tourQuery = Tour.find();
 
   const { query } = new ApiFeatures(tourQuery, req.query)
@@ -14,20 +14,12 @@ exports.getAllTours = async (req, res, next) => {
 
   const tours = await query;
 
-  try {
-    res.status(200).json({
-      status: "success",
-      size: tours.length,
-      data: { tour: tours },
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(400).json({
-      status: "fail",
-      message: error,
-    });
-  }
-};
+  res.status(200).json({
+    status: "success",
+    size: tours.length,
+    data: { tour: tours },
+  });
+});
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const { id } = req.params;
