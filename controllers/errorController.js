@@ -17,6 +17,12 @@ function handleDubKeyError(err) {
   return new AppError(message, 400);
 }
 
+const handleJWTError = () =>
+  new AppError("Invalid token, please log in again!", 401);
+
+const handleJWTExpError = () =>
+  new AppError("Token expired, please log in again!", 401);
+
 function sendErrorDev(err, res) {
   res.status(err.statusCode).json({
     status: err.status,
@@ -56,6 +62,8 @@ module.exports = (err, req, res, next) => {
     if (err.name === "CastError") error = handleCasteError(err);
     if (err.name === "ValidationError") error = handleValidationError(err);
     if (err.errorResponse?.code === 11000) error = handleDubKeyError(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTError(err);
+    if (err.name === "TokenExpiredError") error = handleJWTExpError(err);
 
     sendErrorProd(error, res);
   }
