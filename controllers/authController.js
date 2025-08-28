@@ -14,6 +14,7 @@ const signToken = (id) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password, confirmPassword, passwordChangedAt, role } =
     req.body;
+
   const newUser = await User.create({
     name,
     email,
@@ -98,3 +99,29 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) get user based on the provided email
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(
+      new AppError(
+        "No user found with that email, please sign-up to continue",
+        404
+      )
+    );
+  }
+
+  // 2) Generate random token
+  const resetToken = user.createPasswordResetToken();
+  console.log(resetToken);
+
+  await user.save();
+
+  // 3) send random token on email
+
+  res.json({ message: "yayyyyyyyyy", resetToken });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {});
