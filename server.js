@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 🔥 Shutting down........");
+  console.log("UNCAUGHT EXCEPTION! 🔥 Shutting down 🔴");
   console.log(err.name, err.message);
 
   // it immediately terminate the node js process without processing pending requests, no need to use server.close() because uncaughtExceptions happens synchronously.
@@ -20,11 +20,11 @@ mongoose
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () =>
-  console.log(`server is listening at ${PORT}.....`)
+  console.log(`server is listening at ${PORT} 🟢`)
 );
 
 process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLED REJECTION! 🔥 Shutting down........");
+  console.log("UNHANDLED REJECTION! 🔥 Shutting down 🔴");
   console.log(err.name, err.message);
 
   // process all pending requests before closing the server
