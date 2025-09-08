@@ -6,11 +6,11 @@ const crypto = require("crypto");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: [true, "Please tell use your name"],
+    require: [true, "Please tell us your name"],
   },
   email: {
     type: String,
-    require: [true, "Please tell use your email"],
+    require: [true, "Please tell us your email"],
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {
@@ -47,6 +52,20 @@ userSchema.pre("save", async function (next) {
 
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  // sometimes jwt generates faster than saving the doc in the database, that's why reducing the time by 1000ms
+  this.passwordChangedAt = Date.now() - 1000;
+
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: true });
   next();
 });
 
@@ -76,7 +95,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest("hex");
 
-  this.passwordResetExpires = Date.now() + 15 * 1000;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
 };
