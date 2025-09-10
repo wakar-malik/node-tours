@@ -73,6 +73,35 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      type: {
+        type: String,
+        default: "Point",
+        enum: ["Point"],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     toObject: { virtuals: true },
@@ -84,6 +113,13 @@ tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
 });
 
+// virtual populate
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "tour",
+});
+
 // DOCUMENT MIDDLEWARE
 // only runs for .save() and .create() methods
 tourSchema.pre("save", function (next) {
@@ -93,9 +129,23 @@ tourSchema.pre("save", function (next) {
   });
   next();
 });
-// tourSchema.post("save", function (doc, next) {
-//   this = saved doc
-//   console.log(doc);
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides",
+    select: "-__v -passwordChangedAt",
+  });
+
+  next();
+});
+
+// embedding users 🔴
+// tourSchema.pre("save", async function (next) {
+//   const guidePromise = this.guides.map(
+//     async (el) => await User.findOne({ _id: el })
+//   );
+//   this.guides = await Promise.all(guidePromise);
+//   console.log(this.guides);
 //   next();
 // });
 
@@ -105,12 +155,6 @@ tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
-// tourSchema.post(/^find/, function (docs, next) {
-// this = current query
-// docs = docs coming from executed query
-// console.log(doc);
-// next();
-// });
 
 //AGGREGATION MIDDLEWARE
 tourSchema.pre("aggregate", function (next) {
@@ -118,5 +162,5 @@ tourSchema.pre("aggregate", function (next) {
   next();
 });
 
-const Tour = mongoose.model("tours", tourSchema);
+const Tour = mongoose.model("Tour", tourSchema);
 module.exports = Tour;

@@ -11,6 +11,7 @@ const errorControlHandler = require("./controllers/errorController");
 // routes
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
+const reviewRouter = require("./routes/reviewRoutes");
 
 const limiter = rateLimit({
   limit: 100,
@@ -81,6 +82,7 @@ if (process.env.NODE_ENV == "development") {
 
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));

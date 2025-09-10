@@ -11,8 +11,12 @@ const {
   // topTours,
 } = require("../controllers/tourController");
 const { protect, restrictTo } = require("../controllers/authController");
+const reviewRouter = require("./reviewRoutes");
 
 const router = express.Router();
+
+// api/v1/tours/:tourId/reviews will use reviewRouter
+router.use("/:tourId/reviews", reviewRouter);
 
 // router.route("/top-5-tours").get(topTours, getAllTours);
 
@@ -25,5 +29,9 @@ router
   .get(getTour)
   .patch(updateTour)
   .delete(protect, restrictTo("admin", "lead-guid"), deleteTour);
+
+// router
+//   .route("/:tourId/reviews")
+//   .post(protect, restrictTo("user"), createReview);
 
 module.exports = router;
