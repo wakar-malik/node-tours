@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! 🔥 Shutting down 🔴");
-  console.log(err.name, err.message);
+  console.log(err.name, err.message, err.stack);
 
   // it immediately terminate the node js process without processing pending requests, no need to use server.close() because uncaughtExceptions happens synchronously.
   process.exit(1);

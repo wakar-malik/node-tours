@@ -1,9 +1,13 @@
 const Review = require("../model/reviewModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const { deleteOne, createOne, updateOne } = require("./handlerFactory");
 
 exports.getAllReviews = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+  const filter = {};
+  if (req.params.tourId) filter.tour = req.params.tourId;
+
+  const reviews = await Review.find(filter);
 
   res.status(200).json({
     status: "success",
@@ -25,18 +29,6 @@ exports.getReview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createReview = catchAsync(async (req, res, next) => {
-  if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.currentUser.id;
-
-  const newReview = await Review.create(req.body);
-
-  res.status(200).json({
-    status: "success",
-    data: { review: newReview },
-  });
-});
-
 exports.updateReview = catchAsync(async (req, res, next) => {
   const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
@@ -54,15 +46,13 @@ exports.updateReview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findByIdAndDelete(req.params.id);
+exports.setTourAndUserIds = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.currentUser.id;
 
-  if (!review) {
-    return next(new AppError("No review found with this id", 404));
-  }
+  next();
+};
 
-  res.status(200).json({
-    status: "success",
-    message: "review deleted successfully",
-  });
-});
+exports.createReview = createOne(Review);
+exports.updateReview = updateOne(Review);
+exports.deleteReview = deleteOne(Review);

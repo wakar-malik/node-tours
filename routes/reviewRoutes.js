@@ -14,7 +14,7 @@ const router = express.Router({ mergeParams: true });
 router
   .route("/")
   .get(getAllReviews)
-  .post(protect, restrictTo("user"), createReview);
+  .post(protect, restrictTo("user"), setTourAndUserIds, createReview);
 
 router.route("/:id").get(getReview).delete(deleteReview).patch(updateReview);
 
