@@ -15,7 +15,7 @@ const reviewRouter = require("./reviewRoutes");
 
 const router = express.Router();
 
-// api/v1/tours/:tourId/reviews will use reviewRouter
+// /:tourId/review will use reviewRouter
 router.use("/:tourId/reviews", reviewRouter);
 
 // router.route("/top-5-tours").get(topTours, getAllTours);
