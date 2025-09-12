@@ -1,5 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // CREATE
 exports.createOne = (Model, name) => {
@@ -16,9 +17,15 @@ exports.createOne = (Model, name) => {
 };
 
 // READ ONE
-exports.getOne = (Model) => {
+exports.getOne = (Model, popOptions) => {
   return catchAsync(async (req, res, next) => {
-    const doc = await Model.findById(req.params.id).populate("reviews");
+    let query = Model.findById(req.params.id);
+
+    if (popOptions) {
+      query = query.populate(popOptions);
+    }
+
+    const doc = await query;
 
     if (!doc) {
       return next(new AppError("No document found with this ID", 404));
@@ -27,8 +34,27 @@ exports.getOne = (Model) => {
     res.status(201).json({
       status: "success",
       data: {
-        data: tour,
+        data: doc,
       },
+    });
+  });
+};
+
+// READ ALL
+exports.getAll = (Model) => {
+  return catchAsync(async (req, res, next) => {
+    const { query } = new ApiFeatures(Model.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const tours = await query;
+
+    res.status(200).json({
+      status: "success",
+      size: tours.length,
+      data: { tour: tours },
     });
   });
 };
