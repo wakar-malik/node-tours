@@ -43,18 +43,21 @@ exports.getOne = (Model, popOptions) => {
 // READ ALL
 exports.getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
-    const { query } = new ApiFeatures(Model.find(), req.query)
+    const filter = {};
+    if (req.params.tourId) filter.tour = req.params.tourId;
+
+    let features = new ApiFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
-    const tours = await query;
+    const docs = await features.query;
 
     res.status(200).json({
       status: "success",
-      size: tours.length,
-      data: { tour: tours },
+      size: docs.length,
+      data: { data: docs },
     });
   });
 };
