@@ -8,7 +8,14 @@ const {
   getAll,
 } = require("./handlerFactory");
 
-exports.getAllTours = getAll(Tour);
+exports.aliasTopTours = () => {
+  req.query.limit = "5";
+  req.query.sort = "-ratingsAverage,price";
+  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  next();
+};
+
+exports.getAllTours = getAll(Tour, "tours");
 exports.getTour = getOne(Tour, { path: "reviews" });
 exports.deleteTour = deleteOne(Tour);
 exports.createTour = createOne(Tour);

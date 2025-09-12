@@ -8,6 +8,7 @@ const {
   deleteTour,
   getTourStats,
   getMonthlyPlan,
+  aliasTopTours,
   // topTours,
 } = require("../controllers/tourController");
 const { protect, restrictTo } = require("../controllers/authController");
@@ -18,7 +19,7 @@ const router = express.Router();
 // /:tourId/review will use reviewRouter
 router.use("/:tourId/reviews", reviewRouter);
 
-// router.route("/top-5-tours").get(topTours, getAllTours);
+router.route("/top-5-tours").get(aliasTopTours, getAllTours);
 
 router.route("/tour-stats").get(getTourStats);
 router.route("/get-monthly-plan/:year").get(getMonthlyPlan);
