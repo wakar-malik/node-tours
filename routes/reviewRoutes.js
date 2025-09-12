@@ -6,6 +6,7 @@ const {
   getReview,
   deleteReview,
   updateReview,
+  setTourAndUserIds,
 } = require("../controllers/reviewController");
 const { protect, restrictTo } = require("../controllers/authController");
 
