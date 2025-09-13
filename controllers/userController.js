@@ -51,14 +51,10 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 });
 
 // Get logged in user
-exports.getMe = catchAsync(async (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: req.currentUser,
-    },
-  });
-});
+exports.getMe = (req, res, next) => {
+  req.params.id = req.currentUser.id;
+  next();
+};
 
 // Not defined, use signup route instead
 exports.createUser = function (req, res) {
