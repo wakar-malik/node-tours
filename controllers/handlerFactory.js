@@ -3,7 +3,7 @@ const AppError = require("../utils/appError");
 const ApiFeatures = require("../utils/apiFeatures");
 
 // CREATE
-exports.createOne = (Model, name) => {
+exports.createOne = (Model) => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
 
@@ -52,7 +52,7 @@ exports.getAll = (Model) => {
       .limitFields()
       .paginate();
 
-    const docs = await features.query.explain();
+    const docs = await features.query;
 
     res.status(200).json({
       status: "success",
