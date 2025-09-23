@@ -21,9 +21,10 @@ const router = express.Router();
 // /:tourId/review will use reviewRouter
 router.use("/:tourId/reviews", reviewRouter);
 
-// router.route("/top-5-tours").get(aliasTopTours, getAllTours);
+router.route("/top-5-cheap").get(aliasTopTours, getAllTours);
 
 router.route("/tour-stats").get(getTourStats);
+
 router
   .route("/get-monthly-plan/:year")
   .get(protect, restrictTo("admin", "lead-guid", "guide"), getMonthlyPlan);
