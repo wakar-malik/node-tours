@@ -7,11 +7,13 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss");
 var hpp = require("hpp");
 const errorControlHandler = require("./controllers/errorController");
+const path = require("path");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
+const viewRouter = require("./routes/viewRoutes");
 
 const limiter = rateLimit({
   limit: 100,
@@ -20,11 +22,13 @@ const limiter = rateLimit({
 });
 
 const app = express();
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(helmet());
 app.use(limiter);
 app.use(express.json({ limit: "10kb" }));
-app.use(express.static(`${__dirname}/public`));
 app.set("query parser", "extended");
 
 app.use((req, res, next) => {
@@ -68,6 +72,8 @@ if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
 }
 
+// API End Points
+app.use("/", viewRouter);
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
@@ -77,5 +83,4 @@ app.use((req, res, next) => {
 });
 
 app.use(errorControlHandler);
-
 module.exports = app;
