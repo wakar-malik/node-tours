@@ -23,18 +23,6 @@ const app = express();
 
 app.use(helmet());
 app.use(limiter);
-app.use(
-  hpp({
-    whitelist: [
-      "duration",
-      "ratingQuantity",
-      "ratingAverage",
-      "maxGroupSize",
-      "difficulty",
-      "price",
-    ],
-  })
-);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(`${__dirname}/public`));
 app.set("query parser", "extended");
