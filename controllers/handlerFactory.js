@@ -43,6 +43,8 @@ exports.getOne = (Model, popOptions) => {
 // READ ALL
 exports.getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
+    console.log(req.query);
+
     const filter = {};
     if (req.params.tourId) filter.tour = req.params.tourId;
 
