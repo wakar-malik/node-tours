@@ -43,10 +43,12 @@ exports.getOne = (Model, popOptions) => {
 // READ ALL
 exports.getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
+    console.log(req.params);
+
     const filter = {};
     if (req.params.tourId) filter.tour = req.params.tourId;
 
-    let features = new ApiFeatures(Model.find(filter), req.query)
+    let features = new ApiFeatures(Model.find(filter), req.cheap || req.query)
       .filter()
       .sort()
       .limitFields()
