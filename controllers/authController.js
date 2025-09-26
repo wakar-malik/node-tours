@@ -135,12 +135,10 @@ exports.isLoggedIn = async (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-  console.log("working...........");
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
-  console.log("working++++");
 
   res.status(200).json({ status: "success" });
 };
@@ -239,6 +237,17 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
+  // check request body
+  const { currentPassword, password, passwordConfirm } = req.body;
+  if (!passwordConfirm || !password || !currentPassword) {
+    return next(
+      new AppError(
+        "please provide currentPassword, password, and passwordConfirm",
+        401
+      )
+    );
+  }
+
   // 1) Check if user exists
   const user = await User.findOne({ _id: req.currentUser.id }).select(
     "+password"
