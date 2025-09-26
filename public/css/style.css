@@ -549,6 +549,9 @@ body {
   top: 0;
   bottom: 0;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .marker {
@@ -608,6 +611,20 @@ body {
   -ms-scroll-snap-type: x mandatory;
   scroll-snap-type: x mandatory;
 }
+
+.reviews::-webkit-scrollbar {
+  width: 10px;
+}
+.reviews::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.reviews::-webkit-scrollbar-thumb {
+  background: #444;
+}
+.reviews::-webkit-scrollbar-thumb:hover {
+  background: #252525;
+}
+
 .reviews__card {
   width: 30rem;
   padding: 4rem;

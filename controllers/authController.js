@@ -50,7 +50,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const { email, password } = req.body;
 
   // 1) Check if email and password exists
@@ -75,6 +74,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers?.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -103,8 +104,46 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Give access to protected routes
   req.currentUser = existedUser;
+  res.locals.loggedInUser = existedUser;
   next();
 });
+
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+
+      const existedUser = await User.findById(decoded.id);
+      if (!existedUser) {
+        return next();
+      }
+
+      if (existedUser.changePasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      res.locals.loggedInUser = existedUser;
+      return next();
+    } catch (error) {
+      return next();
+    }
+  }
+  next();
+};
+
+exports.logout = (req, res, next) => {
+  console.log("working...........");
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  console.log("working++++");
+
+  res.status(200).json({ status: "success" });
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
