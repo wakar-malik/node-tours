@@ -8,6 +8,7 @@ const xss = require("xss");
 var hpp = require("hpp");
 const errorControlHandler = require("./controllers/errorController");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
@@ -22,13 +23,24 @@ const limiter = rateLimit({
 });
 
 const app = express();
+
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://unpkg.com"],
+      connectSrc: ["'self'", "https://unpkg.com"], // allow map fetch
+    },
+  })
+);
+
 app.use(limiter);
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 app.set("query parser", "extended");
 
 app.use((req, res, next) => {

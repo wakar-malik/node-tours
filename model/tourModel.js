@@ -73,6 +73,7 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    description: String,
     startLocation: {
       type: {
         type: String,
