@@ -27,7 +27,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Update user document
   const filteredBody = filterObj(req.body, "name", "email");
-  console.log(filteredBody);
 
   const updatedUser = await User.findByIdAndUpdate(
     req.currentUser.id,

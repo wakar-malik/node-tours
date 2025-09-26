@@ -1,7 +1,10 @@
-const email = document.getElementById("email");
-const password = document.getElementById("password");
 const logOutBtn = document.querySelector(".nav__el--logout");
+const userDataForm = document.querySelector(".form-user-data");
+const loginForm = document.querySelector(".form-login");
+const userPasswordForm = document.querySelector(".form-user-password");
+const btnSavePassword = document.querySelector(".btn--save-password");
 
+// alerts
 function hideAlert() {
   const el = document.querySelector(".alert");
   if (el) el.parentElement.removeChild(el);
@@ -15,6 +18,7 @@ function showAlert(type, msg) {
   setTimeout(hideAlert, 3000);
 }
 
+// login
 async function login(email, password) {
   try {
     const res = await axios({
@@ -35,11 +39,15 @@ async function login(email, password) {
   }
 }
 
-document.querySelector(".form")?.addEventListener("submit", function (e) {
+loginForm?.addEventListener("submit", function (e) {
   e.preventDefault();
-  login(email.value, password.value);
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  login(email, password);
 });
 
+// logout
 async function logout() {
   try {
     const res = await axios({
@@ -50,9 +58,59 @@ async function logout() {
     if (res.data.status === "success") location.reload(true);
     showAlert("success", "Logged out successfully!");
   } catch (err) {
-    console.log(err);
     showAlert("error", "Failed to logout, Try again!");
   }
 }
 
 logOutBtn?.addEventListener("click", logout);
+
+// update data
+async function updateSettings(data, type) {
+  try {
+    const url =
+      type === "password"
+        ? "http://localhost:5000/api/v1/users/updateMyPassword"
+        : "http://localhost:5000/api/v1/users/updateMe";
+
+    const res = await axios({
+      method: "PATCH",
+      url,
+      data,
+    });
+
+    if (res.data.status === "success") {
+      showAlert("success", `${type.toUpperCase()} updated successfully!`);
+    }
+  } catch (err) {
+    console.log(err);
+    showAlert("error", err.response.data.message);
+  }
+}
+
+userDataForm?.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+
+  updateSettings({ name, email }, "data");
+});
+
+userPasswordForm?.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  btnSavePassword.textContent = "Updating...";
+  const currentPassword = document.getElementById("password-current").value;
+  const password = document.getElementById("password").value;
+  const passwordConfirm = document.getElementById("password-confirm").value;
+
+  await updateSettings(
+    { currentPassword, password, passwordConfirm },
+    "password"
+  );
+
+  btnSavePassword.textContent = "Save password";
+  document.getElementById("password-current").value =
+    document.getElementById("password").value =
+    document.getElementById("password-confirm").value =
+      "";
+});
