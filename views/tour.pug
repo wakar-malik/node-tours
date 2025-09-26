@@ -79,10 +79,11 @@ block content
         div#map
             h1 Add map here
 
-    section.section-reviews
-        .reviews
-            each review in tour.reviews   
-                +reviewCard(review)
+    if (tour.reviews.length > 0)
+        section.section-reviews
+            .reviews
+                each review in tour.reviews   
+                    +reviewCard(review)
 
     section.section-cta
         .cta
