@@ -14,7 +14,7 @@ router.use((req, res, next) => {
   const { alert } = req.query;
 
   if (alert) {
-    req.locals.alert = alert;
+    res.locals.alert = alert;
   }
   next();
 });
