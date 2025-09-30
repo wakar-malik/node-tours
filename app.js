@@ -26,14 +26,7 @@ const limiter = rateLimit({
 
 const app = express();
 
-app.get("/health", (req, res, next) => {
-  res.send("OK");
-});
-
-app.use("/", (req, res, next) => {
-  console.log("Connection is Secure =", req.secure);
-  next();
-});
+app.get("/health", (req, res, next) => res.send("OK"));
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
