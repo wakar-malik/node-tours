@@ -49,7 +49,7 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "public")));
 app.use(compression());
-app.use(limiter);
+// app.use(limiter);
 app.use(cookieParser());
 app.set("query parser", "extended");
 
