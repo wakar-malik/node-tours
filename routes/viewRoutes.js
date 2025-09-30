@@ -7,15 +7,19 @@ const {
   getMyTours,
 } = require("../controllers/viewController");
 const { protect, isLoggedIn } = require("../controllers/authController");
-// const { createBookingCheckout } = require("../controllers/bookingController");
 
 const router = express.Router();
 
-router.route("/").get(
-  // createBookingCheckout,
-  isLoggedIn,
-  getOverview
-);
+router.use((req, res, next) => {
+  const { alert } = req.query;
+
+  if (alert) {
+    req.locals.alert = alert;
+  }
+  next();
+});
+
+router.route("/").get(isLoggedIn, getOverview);
 router.route("/tour/:slug").get(isLoggedIn, getTour);
 router.route("/login").get(isLoggedIn, getLoginForm);
 router.route("/me").get(protect, getAccount);
