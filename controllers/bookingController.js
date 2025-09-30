@@ -14,7 +14,6 @@ const {
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked session
   const tour = await Tour.findById(req.params.tourId);
-  console.log(tour);
 
   // 2) Create checkout session
   const session = await stripe.checkout.sessions.create({
@@ -40,8 +39,6 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     client_reference_id: req.params.tourID,
     mode: "payment",
   });
-
-  console.log(session);
 
   // 3) Create session as response
   res.status(200).json({

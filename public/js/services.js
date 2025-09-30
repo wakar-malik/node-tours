@@ -24,7 +24,7 @@ async function login(email, password) {
   try {
     const res = await axios({
       method: "POST",
-      url: "http://127.0.0.1:5000/api/v1/users/login",
+      url: "/api/v1/users/login",
       data: {
         email,
         password,
@@ -53,7 +53,7 @@ async function logout() {
   try {
     const res = await axios({
       method: "GET",
-      url: "http://127.0.0.1:5000/api/v1/users/logout",
+      url: "/api/v1/users/logout",
     });
 
     if (res.data.status === "success") location.reload(true);
@@ -70,8 +70,8 @@ async function updateSettings(data, type) {
   try {
     const url =
       type === "password"
-        ? "http://127.0.0.1:5000/api/v1/users/updateMyPassword"
-        : "http://127.0.0.1:5000/api/v1/users/updateMe";
+        ? "/api/v1/users/updateMyPassword"
+        : "/api/v1/users/updateMe";
 
     const res = await axios({
       method: "PATCH",
@@ -83,7 +83,6 @@ async function updateSettings(data, type) {
       showAlert("success", `${type.toUpperCase()} updated successfully!`);
     }
   } catch (err) {
-    console.log(err);
     showAlert("error", err.response.data.message);
   }
 }
@@ -126,18 +125,13 @@ const stripe = Stripe(
 async function bookTour(tourId) {
   try {
     // 1) Get checkout session from API
-    const session = await axios(
-      `http://127.0.0.1:5000/api/v1/bookings/checkout-session/${tourId}`
-    );
-
-    console.log(session);
+    const session = await axios(`/api/v1/bookings/checkout-session/${tourId}`);
 
     // 2) Create checkout form + charge credit card
     await stripe.redirectToCheckout({
       sessionId: session.data.session.id,
     });
   } catch (err) {
-    console.log(err);
     showAlert("error", err.message);
   }
 }

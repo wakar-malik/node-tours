@@ -9,6 +9,7 @@ var hpp = require("hpp");
 const errorControlHandler = require("./controllers/errorController");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
@@ -52,6 +53,7 @@ app.use(
   })
 );
 
+app.use(compression());
 app.use(limiter);
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
