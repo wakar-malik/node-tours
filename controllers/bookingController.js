@@ -55,13 +55,17 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 // });
 
 async function createBookingCheckout(session) {
-  const tour = session.client_reference_id;
-  const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.data[0].price_data.unit_amount;
+  try {
+    const tour = session.client_reference_id;
+    const user = (await User.findOne({ email: session.customer_email })).id;
+    const price = session.data[0].price_data.unit_amount;
 
-  console.log(tour, user, price);
+    console.log(tour, user, price);
 
-  await Booking.create({ tour, user, price });
+    await Booking.create({ tour, user, price });
+  } catch (err) {
+    res.status(400).send(`Error creating booking ${err.message}`);
+  }
 }
 
 exports.webHookCheckout = async (req, res, next) => {
@@ -79,7 +83,7 @@ exports.webHookCheckout = async (req, res, next) => {
   }
 
   if (event.type === "event.checkout.completed") {
-    createBookingCheckout(event.data.object);
+    await createBookingCheckout(event.data.object);
   }
 
   res.status(200).json({ received: true });
