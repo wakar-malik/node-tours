@@ -35,7 +35,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     success_url: `${req.protocol}://${req.get("host")}/my-tours`,
     cancel_url: `${req.protocol}://${req.get("host")}/tour/${tour.slug}`,
     customer_email: req.currentUser.email,
-    client_reference_id: req.params.tourID,
+    client_reference_id: req.params.tourId,
     mode: "payment",
   });
 
@@ -55,11 +55,12 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 // });
 
 async function createBookingCheckout(session) {
-  console.log("executing 2.....");
-  const tour = session.client_reference_id;
-  const user = (await User.findOne({ email: session.customer_email })).id;
-  // const price = session.data[0].price_data.unit_amount
-  const price = 100;
+  const tour = session.data.object.client_reference_id;
+  const user = (
+    await User.findOne({ email: session.data.object.customer_email })
+  ).id;
+  const price = session.data.object.amount_subtotal;
+
   await Booking.create({ tour, user, price });
 }
 
@@ -81,7 +82,7 @@ exports.webHookCheckout = async (req, res, next) => {
     createBookingCheckout(event.data.object);
   }
 
-  res.status(200).json({ received: true, event, eventType: event.type });
+  res.status(200).json({ received: true });
 };
 
 exports.createBooking = createOne(Booking);
