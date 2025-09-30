@@ -26,7 +26,15 @@ const limiter = rateLimit({
 
 const app = express();
 
-app.get("/health", (req, res) => res.send("OK"));
+app.get("/health", (req, res, next) => {
+  console.log(req.secure);
+  res.send("OK");
+});
+
+app.get("/", (req, res, next) => {
+  console.log(req.secure);
+  next();
+});
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
@@ -39,16 +47,16 @@ app.use(
       scriptSrc: [
         "'self'",
         "https://unpkg.com",
-        "https://js.stripe.com", // ✅ allow stripe scripts
+        "https://js.stripe.com", // allow stripe scripts
       ],
       frameSrc: [
         "'self'",
-        "https://js.stripe.com", // ✅ allow Stripe iframes (important for Checkout/Elements)
+        "https://js.stripe.com", // allow Stripe iframes (important for Checkout/Elements)
       ],
       connectSrc: [
         "'self'",
         "https://unpkg.com",
-        "https://js.stripe.com", // ✅ Stripe APIs
+        "https://js.stripe.com", // Stripe APIs
         "https://api.stripe.com",
       ], // allow map fetch
     },
