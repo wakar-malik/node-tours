@@ -26,6 +26,8 @@ const limiter = rateLimit({
 
 const app = express();
 
+app.get("/health", (req, res) => res.send("OK"));
+
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
