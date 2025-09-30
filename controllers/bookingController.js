@@ -86,7 +86,7 @@ exports.webHookCheckout = async (req, res, next) => {
     createBookingCheckout(event.data.object);
   }
 
-  res.status(200).json({ received: true });
+  res.status(200).json({ received: true, event, eventType: event.type });
 };
 
 exports.createBooking = createOne(Booking);
