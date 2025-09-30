@@ -27,12 +27,11 @@ const limiter = rateLimit({
 const app = express();
 
 app.get("/health", (req, res, next) => {
-  console.log(req.secure);
   res.send("OK");
 });
 
-app.get("/", (req, res, next) => {
-  console.log(req.secure);
+app.use("/", (req, res, next) => {
+  console.log("Connection is Secure =", req.secure);
   next();
 });
 
