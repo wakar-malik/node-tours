@@ -5,11 +5,11 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss");
-var hpp = require("hpp");
 const errorControlHandler = require("./controllers/errorController");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
+const cors = require("cors");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
@@ -26,12 +26,21 @@ const limiter = rateLimit({
 
 const app = express();
 
-app.get("/health", (req, res, next) => res.send("OK"));
-
+// templates and static files
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
 
+// npm packages
+app.use(cors());
+app.options("*", cors()); // for pre-flight
+app.use(express.static(path.join(__dirname, "public")));
+app.use(compression());
+app.use(limiter);
+app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
+app.set("query parser", "extended");
+
+app.get("/health", (req, res, next) => res.send("OK"));
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -54,12 +63,6 @@ app.use(
     },
   })
 );
-
-app.use(compression());
-app.use(limiter);
-app.use(express.json({ limit: "10kb" }));
-app.use(cookieParser());
-app.set("query parser", "extended");
 
 app.use((req, res, next) => {
   // sanitize body e.g {email:"<script>something</script>"} to {email:"&lt;div&lt;something&lt;/div&lt;"} removes <,> symbols from req.body with html entity codes.
