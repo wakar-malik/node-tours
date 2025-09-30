@@ -31,8 +31,13 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // npm packages
-app.use(cors());
-app.options("*", cors()); // for pre-flight
+app.use(
+  cors({
+    origin: "*", // allow all origins
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allow all methods for pre-flight
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(compression());
 app.use(limiter);
