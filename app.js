@@ -9,12 +9,14 @@ var hpp = require("hpp");
 const errorControlHandler = require("./controllers/errorController");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const viewRouter = require("./routes/viewRoutes");
+const bookingRouter = require("./routes/bookingRoutes");
 
 const limiter = rateLimit({
   limit: 100,
@@ -31,13 +33,27 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://unpkg.com"],
-      connectSrc: ["'self'", "https://unpkg.com"], // allow map fetch
+      defaultSrc: ["'self'", "https://js.stripe.com"],
+      scriptSrc: [
+        "'self'",
+        "https://unpkg.com",
+        "https://js.stripe.com", // ✅ allow stripe scripts
+      ],
+      frameSrc: [
+        "'self'",
+        "https://js.stripe.com", // ✅ allow Stripe iframes (important for Checkout/Elements)
+      ],
+      connectSrc: [
+        "'self'",
+        "https://unpkg.com",
+        "https://js.stripe.com", // ✅ Stripe APIs
+        "https://api.stripe.com",
+      ], // allow map fetch
     },
   })
 );
 
+app.use(compression());
 app.use(limiter);
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
@@ -89,6 +105,7 @@ app.use("/", viewRouter);
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/bookings", bookingRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));
