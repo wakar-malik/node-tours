@@ -11,12 +11,12 @@ function hideAlert() {
   if (el) el.parentElement.removeChild(el);
 }
 
-function showAlert(type, msg) {
+function showAlert(type, msg, time = 7) {
   hideAlert();
   const markup = `<div class="alert alert--${type}">${msg}</div>`;
   document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
 
-  setTimeout(hideAlert, 3000);
+  setTimeout(hideAlert, time * 1000);
 }
 
 // login
@@ -142,3 +142,6 @@ bookBtn?.addEventListener("click", function (e) {
 
   bookTour(tourId);
 });
+
+const alertMessage = document.body.dataset.alert;
+if (alertMessage) showAlert("success", "Tour Created", 20);
