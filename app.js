@@ -10,6 +10,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const cors = require("cors");
+const stripe = require("stripe");
 
 // routes
 const tourRouter = require("./routes/tourRoutes");
@@ -17,6 +18,7 @@ const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const viewRouter = require("./routes/viewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
+const { webHookCheckout } = require("./controllers/bookingController");
 
 const limiter = rateLimit({
   limit: 100,
@@ -26,11 +28,18 @@ const limiter = rateLimit({
 
 const app = express();
 
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webHookCheckout
+);
+
 // templates and static files
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // npm packages
+app.use(express.json({ limit: "10kb" }));
 app.use(
   cors({
     origin: "*", // allow all origins
@@ -41,7 +50,6 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 app.use(compression());
 app.use(limiter);
-app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.set("query parser", "extended");
 
